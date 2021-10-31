@@ -55,6 +55,46 @@ markARKM_Bat = {'M1':'АРКМ-27 ПН', 'M2':'АРКМ-15 ПН',\
 			'M3':'АРКМ-15', 'M6':'АРКМ-27 Норман'}
 markARK_Bat = {'M5':'АРК'}
 
+SKN_112 = ['F1', 'F2', 'P1', 'RAB', 'T1', 'T2']
+Col_112 = {'1':'001', '2':'002', '3':'003', '4':'004', '5':'005'}
+###
+SKN_41 = [\
+#25_SKN_Column_41_*.F1
+			'F1',\
+#25_SKN_Column_41_*.F2
+			'F2',\
+#25_SKN_Column_41_*.F3
+			'F3', \
+#25_SKN_Column_41_*.F3.T_sat
+			'F3.T_sat', \
+#25_SKN_Column_41_*.L1_1
+			'L1_1', \
+#25_SKN_Column_41_*.L1_2
+			'L1_2', \
+#25_SKN_Column_41_*.P1
+			'P1', \
+#25_SKN_Column_41_*.P2
+			'P2', \
+#25_SKN_Column_41_*.P3
+			'P3', \
+#25_SKN_Column_41_*.P4
+			'P4', \
+#25_SKN_Column_41_*.RAB
+			'RAB', \
+#25_SKN_Column_41_*.T4
+			'T4', \
+#25_SKN_Column_41_*.T5
+			'T5', \
+#25_SKN_Column_41_*.T6
+			'T6', \
+#25_SKN_Column_41_*.T7
+			'T7', \
+#25_SKN_Column_41_*.T8
+			'T8'\
+	]
+apps = {'112':'25_SKN_Column_112_', '41':'25_SKN_Column_41_', 'bat':'25_SKS_Battery_'}
+battery = {'1':'001', '2':'002', '4':'004', '8':'008'}
+
 
 def getallvalues(series):
 	l = series.to_list()
@@ -458,6 +498,8 @@ def main2(data1=all_files.paek_10, data2=all_files.paek_14):
 		
 		df12 = pandas.read_excel(homedir+g, dh.df1sh2 )
 		df12r, df12c = df12.shape
+		df11 = pandas.read_excel(homedir+g, dh.df1sh1 )
+		df11r, df11c = df11.shape
 		print(data1.split(sep='\\'))
 		g = data2.split('\\')
 		g = g[len(g)-1]
@@ -476,7 +518,8 @@ def main2(data1=all_files.paek_10, data2=all_files.paek_14):
 	#print( len(dm.getindexes(df12, 'AL_25_Battery_002.Model24H_str', 'АРК')) )
 	# AL_25_Battery_001.Model24H_str - mark
 	# AL_25_Battery_001.Column24H_str - worked column
-	main_battery_numer = str(2)
+	# 1, 2, 4, 8
+	main_battery_numer = str(4)
 	'AL_25_Battery_002.Model24H_str'
 	sl = set(df12[	'AL_25_Battery_00' + \
 					main_battery_numer +\
@@ -606,7 +649,7 @@ def main2(data1=all_files.paek_10, data2=all_files.paek_14):
 #					col41dtl+=[[col, iel, ind, df21.iat[ind,0]]]
 					col_f1 = len('AL_25_Column_41_')
 					col_f2 = col.find('_str')
-					col41dtl+=[[iel[2], iel[3],int(col[col_f1:col_f2]),\
+					col41dtl+=[[iel[2], iel[3],col[col_f1:col_f2],\
 						ind,\
 						df21.iat[ind,0]\
 							]]
@@ -634,8 +677,112 @@ def main2(data1=all_files.paek_10, data2=all_files.paek_14):
 			#maxl = len(el)
 		#if len(el)==maxl:
 			#print(el)
+	ind = 0
+	for dt1 in df11.iloc[:, 0]:
+		for ind1 in col41dtl:
+			if dt1 == ind1[4]:
+				print(f'{ind} equ time\t{dt1}')
+				ind+=1
+	colsl = []
+	for cols in df11.columns:
+		if cols.count('41')>0 or cols.count('112')>0 or cols.count('Bat')>0:
+			colsl+=[cols]
+	#for i in sorted(colsl):
+		#print('c\t\t', i)
+	  #25_SKS_Battery_001.KONV
+	main_datas = []
+	mdc_0 = []
+	mdc_1 = []
+	mdc_2 = []
+	mdc_3 = []
+	mdc_4 = []
+	mdc_5 = []
+	mdc_6 = []
+	mdc_7 = []
+	mdc_8 = []
+	mdc_9 = []
+	mdc_10 = []
+	mdc_11 = []
+	mdc_12= []
+	mdc_13= []
+	mdc_14= []
+	mdc_15= []
+	mdc_16= []
+	mdc_17= []
+	mdc_18= []
+	mdc_19= []
+	mdc_20= []
+	mdc_21= []
+	mdc_22= []
+	for el in col41dtl:
+		all_tags_find = []
 		
+		bat_tags = '25_SKS_Battery_00' + el[0] + '.KONV'
+		all_tags_find+=[bat_tags]
+		
+		for i in SKN_112:
+			g = '25_SKS_Column_112_00' + el[1] + '.'+i
+			if el[1] == '3':
+				g = '25_SKN_Column_112_00' + el[1] + '.'+i
+			all_tags_find+=[g]
+			
+		for i in SKN_41:
+			g = '25_SKS_Column_41_00' + el[1] + '.'+i
+			if el[1] == '4':
+				g = '25_SKN_Column_41_00' + el[1] + '.'+i
+			all_tags_find+=[g]
+			
+		for r in range(0, df11r):
+			if df11.iat[r, 0] == el[4]:
+				print('-------------')
+				md_1 = []
+				for element in all_tags_find:
+					print('\t', df11[element].iat[r])
+					md_1+=[df11[element].iat[r]]
+				#print('len md_1:\t', len(md_1))
+				main_datas+=[md_1]
 
+	for i in range(0, len(main_datas)):
+		mdc_0+= [main_datas[i][0]]
+		mdc_1+= [main_datas[i][1]]
+		mdc_2+= [main_datas[i][2]]
+		mdc_3+= [main_datas[i][3]]
+		mdc_4+= [main_datas[i][4]]
+		mdc_5+= [main_datas[i][5]]
+		mdc_6+= [main_datas[i][6]]
+		mdc_7+= [main_datas[i][7]]
+		mdc_8+= [main_datas[i][8]]
+		mdc_9+= [main_datas[i][9]]
+		mdc_10+= [main_datas[i][10]]
+		mdc_11+= [main_datas[i][11]]
+		mdc_12+= [main_datas[i][12]]
+		mdc_13+= [main_datas[i][13]]
+		mdc_14+= [main_datas[i][14]]
+		mdc_15+= [main_datas[i][15]]
+		mdc_16+= [main_datas[i][16]]
+		mdc_17+= [main_datas[i][17]]
+		mdc_18+= [main_datas[i][18]]
+		mdc_19+= [main_datas[i][19]]
+		mdc_20+= [main_datas[i][20]]
+		mdc_21+= [main_datas[i][21]]
+		mdc_22+= [main_datas[i][22]]
+		
+	gframe = pandas.DataFrame([mdc_0, mdc_1, mdc_2, \
+								mdc_3, mdc_4, mdc_5,\
+									mdc_6, mdc_7, mdc_8,\
+									mdc_9, mdc_10, mdc_11,\
+									mdc_12, mdc_13, mdc_14,\
+									mdc_15, mdc_16, mdc_17,\
+									mdc_18, mdc_19, mdc_20, \
+									mdc_21, mdc_22])
+	gframeT = gframe.T
+	gframeT.to_excel('asdf.' + main_battery_numer +'.xlsx')
+		
+		
+		
+		
+				
+			
 	
 	
 	
